@@ -9,6 +9,7 @@ readonly PRODUCT_VERSION="5.3.0"
 readonly WUM_PRODUCT_NAME=${PRODUCT_NAME}-${PRODUCT_VERSION}
 readonly WUM_PRODUCT_DIR=/home/${USERNAME}/.wum-wso2/products/${PRODUCT_NAME}/${PRODUCT_VERSION}
 readonly INSTALLATION_DIR=/opt/wso2
+readonly PRODUCT_HOME="${INSTALLATION_DIR}/${PRODUCT_NAME}-${PRODUCT_VERSION}"
 
 # MYSQL connection details
 readonly MYSQL_USERNAME="root"

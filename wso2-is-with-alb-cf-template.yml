@@ -304,6 +304,7 @@ Resources:
             - !Ref WSO2EnvInstanceSecurityGroup
   WSO2EnvISInstance:
     Type: 'AWS::EC2::Instance'
+    DependsOn: WSO2EnvDBInstance
     Properties:
       DisableApiTermination: 'false'
       InstanceInitiatedShutdownBehavior: stop
