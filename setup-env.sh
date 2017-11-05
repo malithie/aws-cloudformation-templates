@@ -13,6 +13,7 @@ install_packages() {
     apt-get update -y
     apt install unzip -y
     apt install git -y
+    apt install mysql-client -y
 }
 
 install_wum() {
