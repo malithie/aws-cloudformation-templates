@@ -17,6 +17,7 @@ install_packages() {
 }
 
 install_wum() {
+    echo "127.0.0.1 $(hostname)" >> /etc/hosts
     wget -P ${LIB_DIR} https://product-dist.wso2.com/downloads/wum/1.0.0/wum-1.0-linux-x64.tar.gz
     cd /usr/local/
     tar -zxvf "${LIB_DIR}/wum-1.0-linux-x64.tar.gz"
