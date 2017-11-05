@@ -315,10 +315,12 @@ Resources:
         Fn::Base64:
           !Sub |
             #!/bin/bash -xe
+            cd /home/ubuntu/
             git clone https://github.com/malithie/aws-cloudformation-templates.git --depth 1
+            chown -R ubuntu aws-cloudformation-templates
             cd aws-cloudformation-templates
             chmod +x ./setup-env.sh
-            bash ./setup-env.sh ${WUMUsername} ${WUMPassword} &> /home/$USER/setup-env.out
+            bash ./setup-env.sh ubuntu ${WUMUsername} ${WUMPassword} &> /home/ubuntu/setup-env.out
       Tags:
         - Key: Name
           Value: wso2-is-instance1
