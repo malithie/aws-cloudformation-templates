@@ -318,7 +318,7 @@ Resources:
             git clone https://github.com/malithie/aws-cloudformation-templates.git --depth 1
             cd aws-cloudformation-templates
             chmod +x ./setup-env.sh
-            bash ./setup-env.sh ${WUMUserName} ${WUMPassword} &> /home/$USER/setup-env.out
+            bash ./setup-env.sh ${WUMUsername} ${WUMPassword} &> /home/$USER/setup-env.out
       Tags:
         - Key: Name
           Value: wso2-is-instance1
