@@ -28,8 +28,8 @@ readonly GOV_REG_USER="wso2registryuser"
 readonly BPS_USER="wso2bpsuser"
 
 setup_wum_updated_pack() {
-    sudo -u ${USERNAME} wum add ${WUM_PRODUCT_NAME} -y
-    sudo -u ${USERNAME} wum update ${WUM_PRODUCT_NAME}
+    sudo -u ${USERNAME} /usr/local/wum/bin/wum add ${WUM_PRODUCT_NAME} -y
+    sudo -u ${USERNAME} /usr/local/wum/bin/wum update ${WUM_PRODUCT_NAME}
 
     mkdir -p ${INSTALLATION_DIR}
     chown -R ${USERNAME} ${INSTALLATION_DIR}
