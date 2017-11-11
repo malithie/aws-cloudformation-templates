@@ -4,9 +4,9 @@ exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 set -o verbose
 
 # This script setup environment for WSO2 product deployment
-readonly USERNAME=$1
-readonly WUM_USER=$2
-readonly WUM_PASS=$3
+readonly USERNAME=$2
+readonly WUM_USER=$4
+readonly WUM_PASS=$6
 readonly LIB_DIR=/home/${USERNAME}/lib
 
 install_packages() {

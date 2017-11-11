@@ -3,9 +3,9 @@ exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 # Echoes all commands before executing.
 set -o verbose
 
-readonly USERNAME=$1
-readonly MYSQL_HOST=$2
-readonly IS_HOST_NAME=$3
+readonly USERNAME=$2
+readonly MYSQL_HOST=$4
+readonly IS_HOST_NAME=$6
 
 readonly PRODUCT_NAME="wso2is"
 readonly PRODUCT_VERSION="5.3.0"
