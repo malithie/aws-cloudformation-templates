@@ -42,9 +42,9 @@ setup_wum_updated_pack() {
 setup_databases() {
 
     echo ">> Creating databases..."
-    mysql -h $MYSQL_HOST -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "DROP DATABASE IF EXISTS '$UM_DB'; DROP DATABASE IF
-    EXISTS '$IDENTITY_DB'; DROP DATABASE IF EXISTS '$GOV_REG_DB'; DROP DATABASE IF EXISTS '$BPS_DB'; CREATE DATABASE
-    '$UM_DB'; CREATE DATABASE '$IDENTITY_DB'; CREATE DATABASE '$GOV_REG_DB'; CREATE DATABASE '$BPS_DB';"
+    mysql -h $MYSQL_HOST -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "DROP DATABASE IF EXISTS $UM_DB; DROP DATABASE IF
+    EXISTS $IDENTITY_DB; DROP DATABASE IF EXISTS $GOV_REG_DB; DROP DATABASE IF EXISTS $BPS_DB; CREATE DATABASE
+    $UM_DB; CREATE DATABASE $IDENTITY_DB; CREATE DATABASE $GOV_REG_DB; CREATE DATABASE $BPS_DB;"
 
     echo ">> Creating users..."
     mysql -h $MYSQL_HOST -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "DROP USER IF EXISTS '$UM_USER'@'%'; DROP USER IF
@@ -59,9 +59,9 @@ setup_databases() {
     '$GOV_REG_USER'@'%'; GRANT ALL PRIVILEGES ON $BPS_DB.* TO '$BPS_USER'@'%';"
 
     echo -e ">> Creating tables..."
-    mysql -h $MYSQL_HOST -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "USE '$UM_DB'; SOURCE dbscripts/mysql/um-mysql.sql;
-    USE '$IDENTITY_DB'; SOURCE dbscripts/mysql/identity-mysql.sql; USE '$GOV_REG_DB'; SOURCE
-    dbscripts/mysql/gov-registry-mysql.sql; USE '$BPS_DB'; SOURCE dbscripts/mysql/bps-mysql.sql;"
+    mysql -h $MYSQL_HOST -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "USE $UM_DB; SOURCE dbscripts/mysql/um-mysql.sql;
+    USE $IDENTITY_DB; SOURCE dbscripts/mysql/identity-mysql.sql; USE $GOV_REG_DB; SOURCE
+    dbscripts/mysql/gov-registry-mysql.sql; USE $BPS_DB; SOURCE dbscripts/mysql/bps-mysql.sql;"
 }
 
 copy_libs() {
