@@ -71,7 +71,7 @@ setup_databases() {
 copy_libs() {
 
     echo ">> Copying mysql jdbc driver "
-    cp -v $(find /home/${USERNAME}/lib/ -iname "mysql-connector*.jar" | head -n 1 ) ${PRODUCT_HOME}/lib/
+    cp -v $(find /home/${USERNAME}/lib/ -iname "mysql-connector*.jar" | head -n 1 ) ${PRODUCT_HOME}/repository/components/lib
 }
 
 copy_config_files() {
@@ -95,7 +95,6 @@ configure_product() {
     find ${PRODUCT_HOME}/ -type f \( -iname "*.properties" -o -iname "*.xml" \) -print0 | xargs -0 sed -i 's/#_BPS_DB_#/'$BPS_DB'/g'
     find ${PRODUCT_HOME}/ -type f \( -iname "*.properties" -o -iname "*.xml" \) -print0 | xargs -0 sed -i 's/#_BPS_USER_#/'$BPS_USER'/g'
     echo "Done!"
-
 }
 
 start_product() {

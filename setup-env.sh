@@ -63,6 +63,7 @@ install_java8() {
     fi
     source /etc/environment
 
+    echo ">> Setting java userPrefs ..."
     sudo -u ${USERNAME} mkdir -p /home/${USERNAME}/.java/.systemPrefs
     sudo -u ${USERNAME} mkdir /home/${USERNAME}/.java/.userPrefs
     sudo -u ${USERNAME} chmod -R 755 /home/${USERNAME}/.java
