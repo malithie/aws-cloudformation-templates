@@ -51,6 +51,9 @@ Parameters:
   EC2KeyPair:
     Description: This is used to ssh to the node. If you don't have a key, please create one from AWS console and rerun the script
     Type: "AWS::EC2::KeyPair::KeyName"
+  ALBCertificateARN:
+    Type: String
+    Description: Enter the ARN value of the certificate uploaded to ACM for Application Load Balancers
   InstanceType:
     Description: EC2 instance type [t2.micro is the free tier]
     Type: String
@@ -69,10 +72,6 @@ Parameters:
       - m3.xlarge
       - m3.2xlarge
     ConstraintDescription: must be a valid EC2 instance type.
-  InstanceUserName:
-    Type: String
-    Default: ubuntu
-    Description: Username of the EC2 instance user.
 
 ################################
 # Create AWS resources
@@ -105,7 +104,7 @@ Resources:
   WSO2EnvPublicSubnet1:
     Type: 'AWS::EC2::Subnet'
     Properties:
-      CidrBlock: 10.0.0.0/24
+      CidrBlock: 10.0.254.0/24
       AvailabilityZone: !Select
         - '0'
         - !GetAZs ''
@@ -116,7 +115,7 @@ Resources:
   WSO2EnvPublicSubnet2:
     Type: 'AWS::EC2::Subnet'
     Properties:
-      CidrBlock: 10.0.2.0/24
+      CidrBlock: 10.0.252.0/24
       AvailabilityZone: !Select
         - '1'
         - !GetAZs ''
@@ -189,6 +188,11 @@ Resources:
     Properties:
       NetworkAclId: !Ref WSO2EnvNetworkAcl
       SubnetId: !Ref WSO2EnvPublicSubnet1
+  subnetacl3:
+      Type: 'AWS::EC2::SubnetNetworkAclAssociation'
+      Properties:
+        NetworkAclId: !Ref WSO2EnvNetworkAcl
+        SubnetId: !Ref WSO2EnvPublicSubnet2
   gw1:
     Type: 'AWS::EC2::VPCGatewayAttachment'
     Properties:
@@ -200,6 +204,11 @@ Resources:
       RouteTableId: !Ref WSO2EnvPublicRouteTable1
       SubnetId: !Ref WSO2EnvPublicSubnet1
   subnetroute2:
+      Type: 'AWS::EC2::SubnetRouteTableAssociation'
+      Properties:
+        RouteTableId: !Ref WSO2EnvPublicRouteTable1
+        SubnetId: !Ref WSO2EnvPublicSubnet2
+  subnetroute3:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
       RouteTableId: !Ref WSO2EnvRouteTable2
@@ -264,6 +273,19 @@ Resources:
       SecurityGroupEgress:
       - IpProtocol: -1
         CidrIp: 0.0.0.0/0
+  WSO2EnvDBSecurityGroup:
+      Type: 'AWS::EC2::SecurityGroup'
+      Properties:
+        GroupDescription: Security group for IS RDS
+        VpcId: !Ref WSO2EnvVPC
+        SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          CidrIp: 0.0.0.0/0
+        SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
 
   ###########################
   # Create Elastic IPs
@@ -297,9 +319,6 @@ Resources:
           Description: Primary network interface
           DeviceIndex: 0
           SubnetId: !Ref WSO2EnvPublicSubnet1
-          PrivateIpAddresses:
-            - PrivateIpAddress: 10.0.0.70
-              Primary: 'true'
           GroupSet:
             - !Ref WSO2EnvInstanceSecurityGroup
   WSO2EnvISInstance:
@@ -323,7 +342,7 @@ Resources:
             chmod +x ./setup-env.sh
             chmod +x ./setup-is.sh
             bash ./setup-env.sh ubuntu ${WUMUsername} ${WUMPassword} &> /home/ubuntu/setup-env.out
-            bash ./setup-is.sh ubuntu &> /home/ubuntu/setup-env.out
+            bash ./setup-is.sh ubuntu ${WSO2EnvDBInstance.Endpoint.Address} &> /home/ubuntu/setup-env.out
       Tags:
         - Key: Name
           Value: wso2-is-instance1
@@ -332,9 +351,6 @@ Resources:
           Description: Primary network interface
           DeviceIndex: 0
           SubnetId: !Ref WSO2EnvPrivateSubnet1
-          PrivateIpAddresses:
-            - PrivateIpAddress: 10.0.1.71
-              Primary: 'true'
           GroupSet:
             - !Ref WSO2EnvInstanceSecurityGroup
 
@@ -353,63 +369,79 @@ Resources:
       MasterUserPassword: root1234
       AutoMinorVersionUpgrade: false
       BackupRetentionPeriod: 0
+      DBSubnetGroupName: !Ref WSO2EnvDBSubnetGroup
+      VPCSecurityGroups:
+        - !Ref WSO2EnvDBSecurityGroup
       AvailabilityZone: !Select
         - '0'
         - !GetAZs ''
     DeletionPolicy: Snapshot
+  WSO2EnvDBSubnetGroup:
+    Type: "AWS::RDS::DBSubnetGroup"
+    Properties:
+      DBSubnetGroupDescription: RDS subnet group
+      SubnetIds:
+        - !Ref WSO2EnvPublicSubnet1
+        - !Ref WSO2EnvPublicSubnet2
+        - !Ref WSO2EnvPrivateSubnet1
 
   ########################
   # Create Load Balancers
-  ########################
-#  WSO2EnvAxis28280ALBListener:
-#    Type: AWS::ElasticLoadBalancingV2::Listener
-#    Properties:
-#      DefaultActions:
-#        - Type: forward
-#          TargetGroupArn: !Ref WSO2EnvAxis28280LBTargetGroup
-#      LoadBalancerArn: !Ref WSO2EnvAxis28280ApplicationLoadBalancer
-#      Port: 8080
-#      Protocol: HTTP
-#  WSO2EnvAxis28280ApplicationLoadBalancer:
-#    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-#    Properties:
-#      Scheme: internet-facing
-#      Subnets:
-#        - !Ref WSO2EnvPublicSubnet1
-#        - !Ref WSO2EnvPublicSubnet2
-#      SecurityGroups:
-#        - !Ref WSO2EnvLBSecurityGroup
-#  WSO2EnvAxis28280LBTargetGroup:
-#    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-#    Properties:
-#      HealthCheckIntervalSeconds: 30
-#      HealthCheckProtocol: HTTP
-#      HealthCheckTimeoutSeconds: 10
-#      HealthyThresholdCount: 4
-#      HealthCheckPath: /services/Version
-#      HealthCheckPort: 8280
-#      Matcher:
-#        HttpCode: 200
-#      Name: ei-axis2-8280
-#      Port: 8280
-#      Protocol: HTTP
-#      TargetGroupAttributes:
-#      - Key: deregistration_delay.timeout_seconds
-#        Value: '20'
-#      Targets:
-#      - Id: !Ref WSO2EnvISInstance
-#        Port: 8280
-#      UnhealthyThresholdCount: 3
-#      VpcId:
-#        Ref: WSO2EnvVPC
-#      Tags:
-#      - Key: Name
-#        Value: ei-axis2-8280
+  #######################
+  WSO2EnvISApplicationLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: identity-demo
+      Scheme: internet-facing
+      Subnets:
+        - !Ref WSO2EnvPublicSubnet1
+        - !Ref WSO2EnvPublicSubnet2
+      SecurityGroups:
+        - !Ref WSO2EnvLBSecurityGroup
+  WSO2EnvISALBTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 30
+      HealthCheckProtocol: HTTPS
+      HealthCheckTimeoutSeconds: 10
+      HealthyThresholdCount: 4
+      HealthCheckPath: /carbon/admin/login.jsp
+      HealthCheckPort: 9443
+      Matcher:
+        HttpCode: 200
+      Name: is-carbon-9443
+      Port: 443
+      Protocol: HTTPS
+      TargetGroupAttributes:
+      - Key: deregistration_delay.timeout_seconds
+        Value: '20'
+      - Key: stickiness.enabled
+        Value: 'true'
+      Targets:
+      - Id: !Ref WSO2EnvISInstance
+        Port: 9443
+      UnhealthyThresholdCount: 3
+      VpcId:
+        Ref: WSO2EnvVPC
+      Tags:
+      - Key: Name
+        Value: is-carbon-9443
+  WSO2EnvISALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref WSO2EnvISALBTargetGroup
+      Certificates:
+        - CertificateArn: !Ref ALBCertificateARN
+      LoadBalancerArn: !Ref WSO2EnvISApplicationLoadBalancer
+      Port: 443
+      Protocol: HTTPS
+      SslPolicy: ELBSecurityPolicy-TLS-1-1-2017-01
 
 #####################################
 # Print details of the created stack 
-#####################################       
-Description: VPC with two public subnets and one private subnet
+#####################################
 Outputs:
   DatabaseURL: 
     Value: !Sub 'jdbc:mysql://${WSO2EnvDBInstance.Endpoint.Address}:${WSO2EnvDBInstance.Endpoint.Port}'
@@ -420,10 +452,10 @@ Outputs:
   WSO2ISPrivateIP:
       Value: !Sub '${WSO2EnvISInstance.PrivateIp}'
       Description: Private IP of the WSO2 IS Instance
-#  EIELB:
-#    Value: !Join
-#      - ''
-#      - - 'http://'
-#        - !GetAtt
-#          - WSO2EnvAxis28280ApplicationLoadBalancer
-#          - DNSName
+  WSO2ISALBDNSName:
+        Value: !Sub '${WSO2EnvISApplicationLoadBalancer.DNSName}'
+        Description: DNS Name of the ALB fronting WSO2 IS Instance
+  WSO2ISMCURL:
+    Value: !Sub 'https://${WSO2EnvISApplicationLoadBalancer.DNSName}/carbon'
+    Description: Access URL of the Management Console
+

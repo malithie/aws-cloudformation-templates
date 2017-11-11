@@ -10,6 +10,7 @@ readonly WUM_PASS=$3
 readonly LIB_DIR=/home/${USERNAME}/lib
 
 install_packages() {
+
     apt-get update -y
     apt install unzip -y
     apt install git -y
@@ -17,6 +18,7 @@ install_packages() {
 }
 
 install_wum() {
+
     echo "127.0.0.1 $(hostname)" >> /etc/hosts
     wget -P ${LIB_DIR} https://product-dist.wso2.com/downloads/wum/1.0.0/wum-1.0-linux-x64.tar.gz
     cd /usr/local/
@@ -35,6 +37,7 @@ install_wum() {
 }
 
 install_java8() {
+
     readonly local jdk_filename='jdk-8u144-linux-x64.tar.gz'
     readonly local java_installer_dir='/usr/lib/jvm/java-8-oracle'
 
@@ -59,9 +62,16 @@ install_java8() {
         sed -i "/JAVA_HOME=/c\JAVA_HOME=${java_installer_dir}" /etc/environment
     fi
     source /etc/environment
+
+    sudo -u ${USERNAME} mkdir -p /home/${USERNAME}/.java/.systemPrefs
+    sudo -u ${USERNAME} mkdir /home/${USERNAME}/.java/.userPrefs
+    sudo -u ${USERNAME} chmod -R 755 /home/${USERNAME}/.java
+
+    sudo -u ${USERNAME} export JAVA_OPTS="-Djava.util.prefs.systemRoot=/home/${USERNAME}/.java/ -Djava.util.prefs.userRoot=/home/${USERNAME}/.java/.userPrefs"
 }
 
 get_mysql_jdbc_driver() {
+
     wget -P ${LIB_DIR} http://central.maven.org/maven2/mysql/mysql-connector-java/5.1.44/mysql-connector-java-5.1.44.jar
 }
 
