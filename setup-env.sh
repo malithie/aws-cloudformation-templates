@@ -64,11 +64,10 @@ install_java8() {
     source /etc/environment
 
     echo ">> Setting java userPrefs ..."
-    sudo -u ${USERNAME} mkdir -p /home/${USERNAME}/.java/.systemPrefs
-    sudo -u ${USERNAME} mkdir /home/${USERNAME}/.java/.userPrefs
-    sudo -u ${USERNAME} chmod -R 755 /home/${USERNAME}/.java
-
-    sudo -u ${USERNAME} echo export JAVA_OPTS="-Djava.util.prefs.systemRoot=/home/${USERNAME}/.java/ -Djava.util.prefs.userRoot=/home/${USERNAME}/.java/.userPrefs" >> /home/${USERNAME}/.bashrc
+    mkdir -p /tmp/.java/.systemPrefs
+    mkdir /tmp/.java/.userPrefs
+    sudo -u ${USERNAME} chmod -R 755 /tmp/.java
+    echo "export JAVA_OPTS=-Djava.util.prefs.systemRoot=/home/${USERNAME}/.java/ -Djava.util.prefs.userRoot=/home/${USERNAME}/.java/.userPrefs" >> /etc/profile
 }
 
 get_mysql_jdbc_driver() {
