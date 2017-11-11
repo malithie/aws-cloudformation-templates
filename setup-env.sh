@@ -26,13 +26,13 @@ install_wum() {
     chown -R ${USERNAME} wum/
     
     local is_path_set=$(grep -r "usr/local/wum/bin" /etc/profile | wc -l  )
-    echo "Adding WUM installation directory to PATH ..."
+    echo ">> Adding WUM installation directory to PATH ..."
     if [ ${is_path_set} = 0 ]; then
-        echo "Adding WUM installation directory to PATH variable"
+        echo ">> Adding WUM installation directory to PATH variable"
         echo "export PATH=\$PATH:/usr/local/wum/bin" >> /etc/profile
     fi
     source /etc/profile
-    echo "Initializing WUM ..."
+    echo ">> Initializing WUM ..."
     sudo -u ${USERNAME} /usr/local/wum/bin/wum init -u ${WUM_USER} -p ${WUM_PASS}
 }
 
@@ -48,17 +48,17 @@ install_java8() {
     cd /tmp/jdk
     sudo tar -zxvf ${LIB_DIR}/${jdk_filename}
 
-    echo "JAVA installation path: ${java_installer_dir}"
+    echo ">> JAVA installation path: ${java_installer_dir}"
     mkdir -p ${java_installer_dir}
     mv ./$(ls)/* ${java_installer_dir}
 
     JAVA_HOME_FOUND=$(grep -r "JAVA_HOME=" /etc/environment | wc -l  )
-    echo "Setting up JAVA_HOME ..."
+    echo ">> Setting up JAVA_HOME ..."
     if [ ${JAVA_HOME_FOUND} = 0 ]; then
-        echo "Adding JAVA_HOME entry."
+        echo ">> Adding JAVA_HOME entry."
         echo JAVA_HOME=${java_installer_dir} >> /etc/environment
     else
-        echo "Updating JAVA_HOME entry."
+        echo ">> Updating JAVA_HOME entry."
         sed -i "/JAVA_HOME=/c\JAVA_HOME=${java_installer_dir}" /etc/environment
     fi
     source /etc/environment
