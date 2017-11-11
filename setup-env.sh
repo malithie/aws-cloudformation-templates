@@ -67,7 +67,7 @@ install_java8() {
     mkdir -p /tmp/.java/.systemPrefs
     mkdir /tmp/.java/.userPrefs
     sudo -u ${USERNAME} chmod -R 755 /tmp/.java
-    echo "export JAVA_OPTS=-Djava.util.prefs.systemRoot=/tmp/.java/ -Djava.util.prefs.userRoot=/tmp/.java/.userPrefs" >> /etc/profile
+    echo "export JAVA_OPTS='-Djava.util.prefs.systemRoot=/tmp/.java/ -Djava.util.prefs.userRoot=/tmp/.java/.userPrefs'" >> /etc/profile
     source /etc/profile
 }
 
