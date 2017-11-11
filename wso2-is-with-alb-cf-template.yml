@@ -339,8 +339,6 @@ Resources:
             git clone https://github.com/malithie/aws-cloudformation-templates.git --depth 1
             chown -R ubuntu aws-cloudformation-templates
             cd aws-cloudformation-templates
-            chmod +x ./setup-env.sh
-            chmod +x ./setup-is.sh
             bash ./setup-env.sh ubuntu ${WUMUsername} ${WUMPassword} &> /home/ubuntu/setup-env.out
             bash ./setup-is.sh ubuntu ${WSO2EnvDBInstance.Endpoint.Address} &> /home/ubuntu/setup-env.out
       Tags:
