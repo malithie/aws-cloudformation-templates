@@ -100,6 +100,7 @@ configure_product() {
 
 start_product() {
 
+    echo ">> Starting WSO2 Identity Server ... "
     sudo -u ${USERNAME} bash ${PRODUCT_HOME}/bin/wso2server.sh start
 }
 
