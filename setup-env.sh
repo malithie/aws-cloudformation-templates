@@ -68,7 +68,7 @@ install_java8() {
     sudo -u ${USERNAME} mkdir /home/${USERNAME}/.java/.userPrefs
     sudo -u ${USERNAME} chmod -R 755 /home/${USERNAME}/.java
 
-    sudo -u ${USERNAME} export JAVA_OPTS="-Djava.util.prefs.systemRoot=/home/${USERNAME}/.java/ -Djava.util.prefs.userRoot=/home/${USERNAME}/.java/.userPrefs"
+    sudo -u ${USERNAME} echo export JAVA_OPTS="-Djava.util.prefs.systemRoot=/home/${USERNAME}/.java/ -Djava.util.prefs.userRoot=/home/${USERNAME}/.java/.userPrefs" >> /home/${USERNAME}/.bashrc
 }
 
 get_mysql_jdbc_driver() {
