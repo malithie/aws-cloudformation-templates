@@ -68,6 +68,7 @@ install_java8() {
     mkdir /tmp/.java/.userPrefs
     sudo -u ${USERNAME} chmod -R 755 /tmp/.java
     echo "export JAVA_OPTS=-Djava.util.prefs.systemRoot=/tmp/.java/ -Djava.util.prefs.userRoot=/tmp/.java/.userPrefs" >> /etc/profile
+    source /etc/profile
 }
 
 get_mysql_jdbc_driver() {
