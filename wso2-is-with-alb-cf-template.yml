@@ -450,7 +450,7 @@ Outputs:
   WSO2ISPrivateIP:
       Value: !Sub '${WSO2EnvISInstance.PrivateIp}'
       Description: Private IP of the WSO2 IS Instance
-  WSO2ISALBDNSName:
+  WSO2ISHostName:
         Value: !Sub '${WSO2EnvISApplicationLoadBalancer.DNSName}'
         Description: DNS Name of the ALB fronting WSO2 IS Instance
   WSO2ISMCURL:
