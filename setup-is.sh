@@ -58,13 +58,13 @@ setup_databases() {
 
     echo -e ">> Creating tables..."
     mysql -h $MYSQL_HOST -u $MYSQL_USERNAME -p$MYSQL_PASSWORD -e "USE $UM_DB; SOURCE dbscripts/mysql/um-mysql.sql;
-    USE $IDENTITY_DB; SOURCE dbscripts/mysql/identity-mysql.sql; USE $GOV_REG_DB; SOURCE
-    dbscripts/mysql/gov-registry-mysql.sql; USE $BPS_DB; SOURCE dbscripts/mysql/bps-mysql.sql;"
+    USE $IDENTITY_DB; SOURCE dbscripts/mysql/identity-mysql.sql; USE $GOV_REG_DB; SOURCE dbscripts/mysql/gov-registry-mysql.sql;
+    USE $BPS_DB; SOURCE dbscripts/mysql/bps-mysql.sql;"
 }
 
 copy_libs() {
 
-    cp $(find /home/${USERNAME}/bin/ -iname "mysql-connector*.jar" | head -n 1 ) ${PRODUCT_HOME}/lib/
+    cp $(find /home/${USERNAME}/lib/ -iname "mysql-connector*.jar" | head -n 1 ) ${PRODUCT_HOME}/lib/
 }
 
 start_product() {
